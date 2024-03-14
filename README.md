@@ -10,6 +10,8 @@ Next steps:
  - Attempt to pass parameters in the function call
  - Resolve the CSS issue
 
+To test, use the test_library.html file.
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
