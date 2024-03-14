@@ -1,5 +1,3 @@
-import './assets/main.css'
-
 import { createApp, defineCustomElement } from 'vue'
 import DateTimePickerSPC from './DateTimePicker.vue'
 import ColorPickerSPC from './ColorPicker.vue'
