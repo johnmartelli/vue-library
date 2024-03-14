@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <script src="C:/Users/john.martelli/source/repos/VueApp2/vue-library/dist/my-library.umd.js"></script>
+    <link rel="stylesheet" href="C:/Users/john.martelli/source/repos/VueApp2/vue-library/dist/my-library.css">
+    dist/assets/vue.js
+</head>
+
+<body>
+    This is an html page
+    <div id="app"></div>
+
+    <div id="dtp1"></div>
+
+    <div id="cp1"></div>
+
+    <div id="ed1"></div>
+
+    <script>
+        window.addEventListener("load", function () {
+            // Your code goes here
+            console.log("All resources finished loading!");
+            console.log(MyLibrary);
+            window.DateTimePicker("#app");
+            MyLibrary.DateTimePicker("#dtp1");
+            MyLibrary.ColorPicker("#cp1");
+            MyLibrary.Editor("#ed1");
+            
+
+        });
+
+    </script>
+
+</body>
+
+</html>
