@@ -1,4 +1,4 @@
-import { createApp, defineCustomElement } from 'vue'
+import { createApp, defineCustomElement, render, h, resolveComponent } from 'vue';
 import DateTimePickerSPC from './DateTimePicker.vue'
 import ColorPickerSPC from './ColorPicker.vue'
 import EditorSPC from './Editor.vue'
@@ -8,10 +8,31 @@ import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 import 'primevue/resources/themes/aura-light-blue/theme.css'
 
+// function DateTimePicker(strID, props = {}) {
+//     console.log("Mounting DateTimePicker");
+//     const dtp = resolveComponent(DateTimePickerSPC);
+//     const app = createApp({ template: dtp, props });
+//     // app.component('date-time-picker-spc', DateTimePickerSPC)
+//     app.component('DateTimePicker', {
+//         components: {
+//             DateTimePickerSPC
+//         },
+//         render() {
+//             return h(
+//                 DateTimePickerSPC, // tag name
+//                 props, // props/attributes
+//             )
+//         }
+//     });
+//     app.use(PrimeVue, { ripple: true });
+//     app.mount(strID);
+//
+//     return app;
+// }
 
-function DateTimePicker(strID) {
+function DateTimePicker(strID, props = {}) {
     console.log("Mounting DateTimePicker");
-    const app = createApp(DateTimePickerSPC)
+    const app = createApp(DateTimePickerSPC, props)
     app.use(PrimeVue, { ripple: true });
     app.mount(strID);
 }

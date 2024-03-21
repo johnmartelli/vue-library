@@ -3,8 +3,6 @@
 <head>
     <script src="dist/my-library.umd.js"></script>
     <link rel="stylesheet" href="dist/my-library.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    dist/assets/vue.js
 </head>
 
 <body>
@@ -16,7 +14,7 @@
     <div id="cp1"></div>
 
     <div id="fu1" style="max-width: 500px;"></div>
-    
+
     <div id="ts1"></div>
 
     <div id="ed1"></div>
@@ -24,16 +22,22 @@
     <script>
         window.addEventListener("load", function () {
             // Your code goes here
+	        const date = new Date('04/28/2013 00:00:00');
+	        const yesterday = new Date(date.getTime());
+	        yesterday.setDate(date.getDate() - 1);
+
             console.log("All resources finished loading!");
             console.log(MyLibrary);
-            window.DateTimePicker("#app");
-            MyLibrary.DateTimePicker("#dtp1");
+            window.DateTimePicker("#app", { inline: true });
+	        /**
+	         * To collect data from input you can use the script below
+	         * document.querySelector('#dtp1 input').value
+	         */
+            MyLibrary.DateTimePicker("#dtp1", { initialValue: yesterday });
             MyLibrary.ColorPicker("#cp1");
             MyLibrary.FileUpload("#fu1");
             MyLibrary.Toast("#ts1");
             MyLibrary.Editor("#ed1");
-            
-
         });
 
     </script>
