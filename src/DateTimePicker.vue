@@ -1,19 +1,28 @@
 <script>
-import Calendar from 'primevue/calendar'
+import Calendar from 'primevue/calendar';
 </script>
 
 <template>
-        
-  Calendar!
-  <Calendar v-model="date" />
+    <Calendar
+        v-model="date"
+        :selection-mode="selectionMode"
+        :inline="inline"
+    />
 </template>
 
 <script setup>
 
-import { ref } from "vue";
+import { ref, watch } from 'vue';
 
+const props = defineProps(['selectionMode', 'inline', 'initialValue']);
+const emit = defineEmits(['update:modelValue']);
 const date = ref();
 
+watch(() => props.initialValue, value => {
+    if (value) {
+        date.value = value;
+    }
+}, { immediate: true })
 </script>
 
 
