@@ -44,7 +44,7 @@ function Editor(targetId, props = {}) {
 	initApp(targetId, EditorSPC, props);
 }
 
-function multipleFileUpload(targetId, props = {}) {
+function MultipleFileUpload(targetId, props = {}) {
 	initApp(targetId, MultipleFileUploadSPC, props);
 }
 
@@ -82,5 +82,6 @@ export {
 	ColorPicker,
 	Editor,
 	FileUpload,
-	Toast
+	Toast,
+	MultipleFileUpload
 };

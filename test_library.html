@@ -7,10 +7,49 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<script src="dist/my-library.umd.js"></script>
 	<link rel="stylesheet" href="dist/my-library.css">
+	<style>
+		section {
+			margin: 0 0 40px;
+			padding: 20px;
+		}
+		section h2 {
+			text-align: center
+		}
+		section:nth-child(even) {
+			background: #f6f6f6;
+		}
+		section:nth-child(odd) {
+			background: #ffffff;
+		}
+	</style>
 	<title>Test library in HTML</title>
 </head>
 <body>
-<div id="dtp1"></div>
+	<section>
+		<h2>Multiple file upload</h2>
+		<article>
+			<h4>Multiple file upload</h4>
+			<div id="multiple-file-upload"></div>
+		</article>
+	</section>
+	<section>
+		<h2>Date Time Picker</h2>
+		<article>
+			<h4>default</h4>
+			<div id="date-time-picker"></div>
+		</article>
+		<article>
+			<h4>with props (preset value)</h4>
+			<div id="date-time-picker-with-props"></div>
+		</article>
+	</section>
+	<section>
+		<h2>Editor</h2>
+		<article>
+			<h4>default</h4>
+			<div id="ed1"></div>
+		</article>
+	</section>
 
 <div id="cp1"></div>
 
@@ -18,7 +57,7 @@
 
 <div id="ts1"></div>
 
-<div id="ed1"></div>
+
 
 <script>
 	window.addEventListener('load', function () {
@@ -30,10 +69,18 @@
 		console.log('All resources finished loading!');
 		console.log(MyLibrary);
 		/**
-		 * To collect data from input you can use the script below
+		 * To collect data from input (For example you can use the script below)
 		 * document.querySelector('#dtp1 input').value
 		 */
-		MyLibrary.DateTimePicker('#dtp1', { initialValue: yesterday });
+		// init MultipleFileUpload
+		MyLibrary.MultipleFileUpload('#multiple-file-upload', {
+			accept: 'application/pdf',
+			apiFullUrl: 'https://platform.dev.altamiraweb.com/'
+		});
+		// init DateTimePicker
+		MyLibrary.DateTimePicker('#date-time-picker');
+		MyLibrary.DateTimePicker('#date-time-picker-with-props', { initialValue: yesterday });
+
 		MyLibrary.ColorPicker('#cp1');
 		MyLibrary.FileUpload('#fu1');
 		MyLibrary.Toast('#ts1');
