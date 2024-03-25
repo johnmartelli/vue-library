@@ -1,70 +1,67 @@
-import { createApp, defineCustomElement, render, h, resolveComponent } from 'vue';
-import DateTimePickerSPC from './DateTimePicker.vue'
-import ColorPickerSPC from './ColorPicker.vue'
-import EditorSPC from './Editor.vue'
-import FileUploadSPC from './FileUpload.vue'
-import ToastSPC from './Toast.vue'
+import { createApp } from 'vue';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
-import 'primevue/resources/themes/aura-light-blue/theme.css'
 
-// function DateTimePicker(strID, props = {}) {
-//     console.log("Mounting DateTimePicker");
-//     const dtp = resolveComponent(DateTimePickerSPC);
-//     const app = createApp({ template: dtp, props });
-//     // app.component('date-time-picker-spc', DateTimePickerSPC)
-//     app.component('DateTimePicker', {
-//         components: {
-//             DateTimePickerSPC
-//         },
-//         render() {
-//             return h(
-//                 DateTimePickerSPC, // tag name
-//                 props, // props/attributes
-//             )
-//         }
-//     });
-//     app.use(PrimeVue, { ripple: true });
-//     app.mount(strID);
-//
-//     return app;
-// }
+// Entry components to dev library components
+import DevComponents from './components/DevComponents.vue';
 
-function DateTimePicker(strID, props = {}) {
-    console.log("Mounting DateTimePicker");
-    const app = createApp(DateTimePickerSPC, props)
-    app.use(PrimeVue, { ripple: true });
-    app.mount(strID);
+// Library components
+import DateTimePickerSPC from './DateTimePicker.vue';
+import ColorPickerSPC from './ColorPicker.vue';
+import EditorSPC from './Editor.vue';
+import FileUploadSPC from './FileUpload.vue';
+import MultipleFileUploadSPC from './MultipleFileUpload.vue';
+import ToastSPC from './Toast.vue';
+
+// Styles
+import 'primevue/resources/themes/aura-light-blue/theme.css';
+import 'primeicons/primeicons.css';
+
+/**
+ * @typedef { import('vue').Component } vueComponent
+ */
+
+/**
+ * @param { string } targetId - HTML target ID (for example '#dtp')
+ * @param { vueComponent } component - vue component
+ * @param { Object } [props] - initial component props
+ */
+function initApp(targetId, component, props = {}) {
+	const app = createApp(component, props);
+	app.use(PrimeVue, { ripple: true });
+	app.mount(targetId);
 }
 
-function ColorPicker(strID) {
-    console.log("Mounting ColorPicker");
-    const app = createApp(ColorPickerSPC)
-    app.use(PrimeVue, { ripple: true });
-    app.mount(strID);
+function DateTimePicker(targetId, props = {}) {
+	initApp(targetId, DateTimePickerSPC, props);
 }
 
-function Editor(strID) {
-    console.log("Mounting Editor");
-    const app = createApp(EditorSPC)
-    app.use(PrimeVue, { ripple: true });
-    app.mount(strID);
+function ColorPicker(targetId, props = {}) {
+	initApp(targetId, ColorPickerSPC, props);
 }
 
-function FileUpload(strID) {
-    console.log("Mounting FileUpload");
-    const app = createApp(FileUploadSPC)
-    app.use(PrimeVue, { ripple: true });
-    app.use(ToastService);
-    app.mount(strID);
+function Editor(targetId, props = {}) {
+	initApp(targetId, EditorSPC, props);
 }
 
-function Toast(strID) {
-    console.log("Mounting ToastSPC");
-    const app = createApp(ToastSPC)
-    app.use(PrimeVue, { ripple: true });
-    app.use(ToastService);
-    app.mount(strID);
+function MultipleFileUpload(targetId, props = {}) {
+	initApp(targetId, MultipleFileUploadSPC, props);
+}
+
+function FileUpload(targetId, props = {}) {
+	console.log('Mounting FileUpload');
+	const app = createApp(FileUploadSPC);
+	app.use(PrimeVue, { ripple: true });
+	app.use(ToastService);
+	app.mount(targetId);
+}
+
+function Toast(targetId) {
+	console.log('Mounting ToastSPC');
+	const app = createApp(ToastSPC);
+	app.use(PrimeVue, { ripple: true });
+	app.use(ToastService);
+	app.mount(targetId);
 }
 
 window.DateTimePicker = DateTimePicker;
@@ -73,5 +70,18 @@ window.Editor = Editor;
 window.FileUpload = FileUpload;
 window.Toast = Toast;
 
+if (import.meta.env.MODE === 'development') {
+	const app = createApp(DevComponents);
+	app.use(PrimeVue, { ripple: true });
+	app.use(ToastService);
+	app.mount('#app');
+}
 
-export { DateTimePicker, ColorPicker, Editor, FileUpload,Toast }
+export {
+	DateTimePicker,
+	ColorPicker,
+	Editor,
+	FileUpload,
+	Toast,
+	MultipleFileUpload
+};
