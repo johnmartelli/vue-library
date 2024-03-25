@@ -2,15 +2,16 @@
     <FileUpload
         :multiple="true"
         :custom-upload="true"
-        accept="application/pdf"
+        :accept="accept"
         class="multiple-file-upload"
         @select="handleSelect"
-        @uploader="handleUploader"
     >
         <template #empty>
-            <p>Drag and drop files to here to upload.ss</p>
+            <p v-if="!selectedFiles.length && !progressFiles.length && !uploadedFiles.length && !failedFiles.length">
+                Drag and drop files to here to upload.ss
+            </p>
         </template>
-        <template #header="{ chooseCallback }">
+        <template #header="{ chooseCallback, clearCallback }">
             <Button
                 label="Choose"
                 icon="pi pi-plus"
@@ -21,63 +22,28 @@
                 :label="selectedFiles.length ? `Upload(${selectedFiles.length})`: 'Upload'"
                 icon="pi pi-upload"
                 :disabled="!selectedFiles.length || progressFiles.length"
-                @click="handleUploadFiles(selectedFiles)"
+                @click="handleUploadFiles(selectedFiles, clearCallback)"
             />
             <Button
                 v-if="!progressFiles.length && failedFiles.length"
                 :label="failedFiles.length ? `Retry(${failedFiles.length})`: 'Upload'"
                 icon="pi pi-refresh"
-                @click="handleUploadFiles(failedFiles)"
+                @click="handleUploadFiles(failedFiles, clearCallback)"
             />
             <Button
                 label="Cancel"
                 icon="pi pi-times"
                 :disabled="!selectedFiles.length || progressFiles.length"
-                @click="handleClearSelectedFiles"
+                @click="handleClearSelectedFiles(clearCallback)"
             />
         </template>
 
-        <template #content>
-            <!-- Failed files -->
-            <div
-                v-for="file in failedFiles"
-                class="multiple-file-upload__item"
-            >
-                <div class="multiple-file-upload__item-details">
-                    <div class="multiple-file-upload__item-name">
-                        {{ file.name }}
-                    </div>
-                    <div class="multiple-file-upload__item-size">
-                        {{ humanFileSize(file.size) }}
-                    </div>
-                    <div class="multiple-file-upload__item-status">
-                        <Badge value="Failed" severity="danger"></Badge>
-                    </div>
-                </div>
-                <div class="multiple-file-upload__item-actions">
-                    <template v-if="isFileInsideProgressFiles(file)">
-                        <Button
-                            :disabled="true"
-                            icon="pi pi-spinner"
-                            icon-class="pi-spin"
-                            severity="primary"
-                            text
-                            rounded
-                            aria-label="Loading"
-                        />
-                    </template>
-                    <template v-else>
-                        <Button
-                            icon="pi pi-refresh"
-                            severity="primary"
-                            text
-                            rounded
-                            aria-label="Retry"
-                            @click="handleUploadFile(file)"
-                        />
-                    </template>
-                </div>
-            </div>
+        <template #content="{ files, removeFileCallback, progress, removeUploadedFileCallback }">
+            <ProgressBar
+                v-if="progressFiles.length"
+                mode="indeterminate"
+                class="multiple-file-upload__progress-bar"
+            />
             <!-- Selected files -->
             <div
                 v-for="file in selectedFiles"
@@ -118,7 +84,47 @@
                             text
                             rounded
                             aria-label="Remove"
-                            @click="handleRemoveFromSelectedFiles(file)"
+                            @click="handleRemoveFromSelectedFiles(file, files, removeFileCallback)"
+                        />
+                    </template>
+                </div>
+            </div>
+            <!-- Failed files -->
+            <div
+                v-for="file in failedFiles"
+                class="multiple-file-upload__item"
+            >
+                <div class="multiple-file-upload__item-details">
+                    <div class="multiple-file-upload__item-name">
+                        {{ file.name }}
+                    </div>
+                    <div class="multiple-file-upload__item-size">
+                        {{ humanFileSize(file.size) }}
+                    </div>
+                    <div class="multiple-file-upload__item-status">
+                        <Badge value="Failed" severity="danger"></Badge>
+                    </div>
+                </div>
+                <div class="multiple-file-upload__item-actions">
+                    <template v-if="isFileInsideProgressFiles(file)">
+                        <Button
+                            :disabled="true"
+                            icon="pi pi-spinner"
+                            icon-class="pi-spin"
+                            severity="primary"
+                            text
+                            rounded
+                            aria-label="Loading"
+                        />
+                    </template>
+                    <template v-else>
+                        <Button
+                            icon="pi pi-refresh"
+                            severity="primary"
+                            text
+                            rounded
+                            aria-label="Retry"
+                            @click="handleUploadFile(file, files, removeFileCallback)"
                         />
                     </template>
                 </div>
@@ -136,7 +142,7 @@
                         {{ humanFileSize(file.size) }}
                     </div>
                     <div class="multiple-file-upload__item-status">
-                        <Badge value="Completed" severity="success"></Badge>
+                        <Badge value="Uploaded" severity="success"></Badge>
                     </div>
                 </div>
             </div>
@@ -147,13 +153,14 @@
 <script setup>
 import {
     ref,
-    defineProps,
     defineOptions
 } from 'vue';
+import axios from 'axios';
 
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
+import ProgressBar from 'primevue/progressbar';
 
 defineOptions({
     name: 'MultipleFileUpload',
@@ -169,6 +176,18 @@ const props = defineProps({
     apiFullUrl: {
         type: String,
         required: true
+    },
+    additionalRequestParams: {
+        type: Object,
+        default: () => ({})
+    },
+    requestHeaders: {
+        type: Object,
+        default: () => ({})
+    },
+    tagName: {
+        type: String,
+        default: 'file'
     }
 });
 
@@ -189,62 +208,75 @@ function handleSelect({ files = [] }) {
     selectedFiles.value = [...files];
 }
 
-function randomInteger(min = 0, max = 1) {
-    const rand = min + Math.random() * (max + 1 - min);
-    return Math.floor(rand);
-}
-
 function isFileInsideProgressFiles(file) {
     return progressFiles.value.find(item => item.name === file.name);
 }
 
-function handleRemoveFromSelectedFiles(file) {
+function handleRemoveFromSelectedFiles(file, files, removeFileCallback) {
+    const index = files.findIndex(item => item.name === file.name);
     selectedFiles.value = [...selectedFiles.value.filter(item => item.name !== file.name)];
+    if (index !== -1) {
+        removeFileCallback(index);
+    }
 }
 
-function handleClearSelectedFiles() {
+function handleClearSelectedFiles(clearCallback) {
     selectedFiles.value = [];
+    clearCallback?.();
 }
 
-function fakeEndpoint(file, isSuccess) {
-    console.log('fakeEndpoint file: ', file);
-    console.log('fakeEndpoint isSuccess: ', isSuccess);
+async function apiRequest(file) {
+    try {
+        const base64 = await convertFileToToBase64(file);
+        const data = {
+            data: [{
+                [props.tagName]: base64,
+                ...props.additionalRequestParams
+            }]
+        };
+
+        return axios.put(props.apiFullUrl, data, props.requestHeaders);
+    } catch (error) {
+        return error;
+    }
+}
+
+function convertFileToToBase64(file) {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (isSuccess) {
-                resolve(file);
-            } else {
-                reject(file);
-            }
-        }, randomInteger(2000, 10000));
-    });
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    })
 }
 
-async function handleUploadFile(file) {
+async function handleUploadFile(file, files = [], removeFileCallback = () => {}) {
     try {
         progressFiles.value = [...progressFiles.value, file];
-        await fakeEndpoint(file, randomInteger(0, 4));
+        await apiRequest(file);
         failedFiles.value = [...failedFiles.value.filter(item => item.name !== file.name)];
         uploadedFiles.value = [...uploadedFiles.value, file];
     } catch (e) {
+        failedFiles.value = [...failedFiles.value.filter(item => item.name !== file.name)];
         failedFiles.value = [...failedFiles.value, file];
     } finally {
         selectedFiles.value = [...selectedFiles.value.filter(item => item.name !== file.name)];
         progressFiles.value = [...progressFiles.value.filter(item => item.name !== file.name)];
+        const index = files.findIndex(item => item.name === file.name);
+        if (index !== -1) {
+            removeFileCallback(index);
+        }
     }
 }
 
-function handleUploadFiles(files = []) {
+function handleUploadFiles(files = [], clearCallback) {
     if (!files.length) return;
 
     for (const file of files) {
         handleUploadFile(file);
     }
-}
 
-function handleUploader({ files }) {
-    console.log('apiFullUrl: ', props.apiFullUrl);
-    console.log('handleUploader: ', files);
+    clearCallback?.();
 }
 </script>
 
@@ -274,12 +306,7 @@ function handleUploader({ files }) {
     padding-right: 0.5rem;
 }
 
-.multiple-file-upload__item-actions {
-
-}
-
-.multiple-file-upload__item-remove {
-    width: 16px;
-    height: 16px;
+.multiple-file-upload__progress-bar {
+    height: 6px;
 }
 </style>

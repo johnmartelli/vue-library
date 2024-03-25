@@ -75,7 +75,15 @@
 		// init MultipleFileUpload
 		MyLibrary.MultipleFileUpload('#multiple-file-upload', {
 			accept: 'application/pdf',
-			apiFullUrl: 'https://platform.dev.altamiraweb.com/'
+			apiFullUrl: 'https://platform.dev.altamiraweb.com/',
+			additionalRequestParams: {
+				a: 1,
+				b: 2
+			},
+			requestHeaders: {
+				'custom-header': 'header-data-1'
+			},
+			tagName: 'customTag',
 		});
 		// init DateTimePicker
 		MyLibrary.DateTimePicker('#date-time-picker');
