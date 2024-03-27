@@ -50,14 +50,30 @@
 			<div id="ed1"></div>
 		</article>
 	</section>
-
-<div id="cp1"></div>
-
-<div id="fu1"></div>
-
-<div id="ts1"></div>
-
-
+    <section>
+        <h2>Autocomplete</h2>
+        <article>
+            <div id="ac1"></div>
+        </article>
+    </section>
+    <section>
+        <h2>Color picker</h2>
+        <article>
+            <div id="cp1"></div>
+        </article>
+    </section>
+    <section>
+        <h2>File upload</h2>
+        <article>
+            <div id="fu1"></div>
+        </article>
+    </section>
+    <section>
+        <h2>Toast</h2>
+        <article>
+            <div id="ts1"></div>
+        </article>
+    </section>
 
 <script>
 	window.addEventListener('load', function () {
@@ -93,6 +109,11 @@
 		MyLibrary.FileUpload('#fu1');
 		MyLibrary.Toast('#ts1');
 		MyLibrary.Editor('#ed1');
+        MyLibrary.Autocomplete("#ac1", {
+            apiFullUrl: 'https://mocki.io/v1/ef99a288-e161-45f7-aeae-4c7e26db9477', //Fake API with 200 skills
+            inputId: "autocompleteHidden", 
+            inputName: "ACH", 
+            initialValue: [18636, 18559, 18558]}); //Pre-selected skills values
 	});
 
 </script>

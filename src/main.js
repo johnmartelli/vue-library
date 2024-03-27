@@ -12,6 +12,7 @@ import EditorSPC from './Editor.vue';
 import FileUploadSPC from './FileUpload.vue';
 import MultipleFileUploadSPC from './MultipleFileUpload.vue';
 import ToastSPC from './Toast.vue';
+import AutocompleteSPC from './Autocomplete.vue';
 
 // Styles
 import 'primevue/resources/themes/aura-light-blue/theme.css';
@@ -56,6 +57,13 @@ function FileUpload(targetId, props = {}) {
 	app.mount(targetId);
 }
 
+function Autocomplete(strID, props = {}) {
+    console.log("Mounting Autocomplete");
+    const app = createApp(AutocompleteSPC, props)
+    app.use(PrimeVue, { ripple: true });        
+    app.mount(strID);
+}
+
 function Toast(targetId) {
 	console.log('Mounting ToastSPC');
 	const app = createApp(ToastSPC);
@@ -69,6 +77,7 @@ window.ColorPicker = ColorPicker;
 window.Editor = Editor;
 window.FileUpload = FileUpload;
 window.Toast = Toast;
+window.Autocomplete = Autocomplete;
 
 if (import.meta.env.MODE === 'development') {
 	const app = createApp(DevComponents);
@@ -83,5 +92,6 @@ export {
 	Editor,
 	FileUpload,
 	Toast,
-	MultipleFileUpload
+	MultipleFileUpload,
+    Autocomplete
 };
